@@ -1,932 +1,753 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sepsis Detection · CS4082 ML Project</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --navy:    #0B1F3A;
-  --teal:    #0D7377;
-  --teal-lt: #14BDCC;
-  --accent:  #F4A261;
-  --red:     #E63946;
-  --green:   #2EC4B6;
-  --white:   #FFFFFF;
-  --offwhite:#F0F4F8;
-  --gray:    #64748B;
-  --gray-lt: #CBD5E1;
-  --card:    #FFFFFF;
-  --text:    #1E293B;
-  --text-2:  #475569;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yasser Alassad — CS Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #4c1d95;
+      --purple-glow: #8b5cf6;
+      --bg: #0a0a0f;
+      --bg2: #0f0f1a;
+      --bg3: #13131f;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --border: rgba(124,58,237,0.2);
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--navy);
-  color: var(--white);
-  overflow-x: hidden;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
 
-/* ── NOISE TEXTURE overlay ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 0; opacity: 0.6;
-}
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.2rem 3rem;
-  background: rgba(11,31,58,0.85);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(20,189,204,0.12);
-}
-.nav-logo {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.85rem; color: var(--teal-lt);
-  letter-spacing: 0.1em; text-decoration: none;
-}
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a {
-  font-size: 0.85rem; color: var(--gray-lt); text-decoration: none;
-  font-weight: 500; letter-spacing: 0.04em;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--teal-lt); }
+    /* ── Grid background ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-/* ── HERO ── */
-#hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: flex-start;
-  padding: 8rem 3rem 4rem;
-  position: relative; overflow: hidden;
-}
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
 
-.hero-bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-}
-.hero-bg-circle.c1 {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(13,115,119,0.25), transparent 70%);
-  top: -100px; right: -100px;
-  animation: drift 12s ease-in-out infinite alternate;
-}
-.hero-bg-circle.c2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(244,162,97,0.12), transparent 70%);
-  bottom: 0; left: 20%;
-  animation: drift 16s ease-in-out infinite alternate-reverse;
-}
-@keyframes drift {
-  from { transform: translate(0,0) scale(1); }
-  to   { transform: translate(30px,20px) scale(1.08); }
-}
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--purple-light);
+      letter-spacing: 0.1em;
+      text-decoration: none;
+    }
 
-.badge {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(13,115,119,0.2);
-  border: 1px solid rgba(20,189,204,0.3);
-  padding: 0.4rem 1rem; border-radius: 99px;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem; color: var(--teal-lt);
-  letter-spacing: 0.08em; margin-bottom: 1.8rem;
-  animation: fadeUp 0.6s ease both;
-}
-.badge-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--teal-lt);
-  animation: pulse 2s ease infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.4; transform: scale(0.7); }
-}
+    .nav-logo span { color: var(--text-dim); }
 
-h1.hero-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 1.05; max-width: 800px;
-  animation: fadeUp 0.7s 0.1s ease both;
-}
-h1.hero-title em { font-style: italic; color: var(--teal-lt); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
 
-.hero-sub {
-  font-size: 1.15rem; color: var(--gray-lt); max-width: 560px;
-  line-height: 1.7; margin-top: 1.5rem;
-  animation: fadeUp 0.7s 0.2s ease both;
-}
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
 
-.hero-ctas {
-  display: flex; gap: 1rem; flex-wrap: wrap;
-  margin-top: 2.5rem;
-  animation: fadeUp 0.7s 0.3s ease both;
-}
-.btn {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.8rem 1.8rem; border-radius: 8px;
-  font-weight: 600; font-size: 0.9rem;
-  text-decoration: none; transition: all 0.2s; cursor: pointer;
-  border: none;
-}
-.btn-primary {
-  background: var(--teal); color: var(--white);
-  box-shadow: 0 0 0 0 rgba(13,115,119,0.5);
-}
-.btn-primary:hover {
-  background: var(--teal-lt); transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(13,115,119,0.4);
-}
-.btn-outline {
-  background: transparent; color: var(--white);
-  border: 1.5px solid rgba(255,255,255,0.2);
-}
-.btn-outline:hover {
-  border-color: var(--teal-lt); color: var(--teal-lt);
-  transform: translateY(-2px);
-}
+    .nav-links a:hover { color: var(--purple-light); }
 
-/* ── STAT ROW ── */
-.stat-row {
-  display: flex; flex-wrap: wrap; gap: 1rem;
-  margin-top: 4rem;
-  animation: fadeUp 0.7s 0.4s ease both;
-}
-.stat-item {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px; padding: 1.2rem 1.8rem;
-  min-width: 130px;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.stat-item:hover { border-color: var(--teal); transform: translateY(-3px); }
-.stat-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 1.9rem; font-weight: 500; color: var(--teal-lt);
-  line-height: 1;
-}
-.stat-lbl {
-  font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem;
-  letter-spacing: 0.05em; text-transform: uppercase;
-}
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--purple-light);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards;
+    }
 
-/* ── SECTIONS ── */
-section { padding: 6rem 3rem; position: relative; }
+    .hero h1 {
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.1s ease forwards;
+    }
 
-.section-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem; color: var(--teal-lt);
-  letter-spacing: 0.15em; text-transform: uppercase;
-  margin-bottom: 0.8rem;
-}
-.section-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15;
-  margin-bottom: 1rem;
-}
-.section-desc {
-  color: var(--gray-lt); font-size: 1.05rem; line-height: 1.7;
-  max-width: 620px; margin-bottom: 3rem;
-}
+    .hero h1 .name-accent {
+      color: transparent;
+      -webkit-text-stroke: 2px var(--purple-light);
+    }
 
-/* ── ABOUT / OVERVIEW ── */
-#overview { background: rgba(255,255,255,0.02); }
-.overview-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem; margin-top: 1rem;
-}
-.o-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 1.8rem;
-  transition: border-color 0.25s, transform 0.25s;
-}
-.o-card:hover { border-color: var(--teal); transform: translateY(-4px); }
-.o-card-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
-.o-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-.o-card p  { font-size: 0.9rem; color: var(--gray-lt); line-height: 1.6; }
+    .hero-desc {
+      max-width: 540px;
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s ease forwards;
+    }
 
-/* ── PIPELINE ── */
-#pipeline { background: var(--navy); }
-.pipeline-steps {
-  display: flex; flex-direction: column; gap: 0;
-  position: relative; max-width: 800px; margin: 0 auto;
-}
-.pipeline-steps::before {
-  content: '';
-  position: absolute; left: 28px; top: 0; bottom: 0;
-  width: 2px; background: linear-gradient(to bottom, var(--teal), var(--teal-lt));
-  opacity: 0.3;
-}
-.step {
-  display: flex; gap: 1.5rem; align-items: flex-start;
-  padding: 1.5rem 0;
-  opacity: 0; transform: translateX(-20px);
-  transition: opacity 0.5s, transform 0.5s;
-}
-.step.visible { opacity: 1; transform: translateX(0); }
-.step-num {
-  flex-shrink: 0;
-  width: 58px; height: 58px; border-radius: 50%;
-  background: rgba(13,115,119,0.2);
-  border: 2px solid var(--teal);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 0.9rem;
-  color: var(--teal-lt); font-weight: 500;
-  position: relative; z-index: 1;
-}
-.step-body h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
-.step-body p  { font-size: 0.88rem; color: var(--gray-lt); line-height: 1.6; }
-.step-tag {
-  display: inline-block; margin-top: 0.5rem;
-  font-family: 'DM Mono', monospace; font-size: 0.72rem;
-  padding: 0.2rem 0.6rem; border-radius: 4px;
-  background: rgba(20,189,204,0.1); color: var(--teal-lt);
-  border: 1px solid rgba(20,189,204,0.2);
-}
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.3s ease forwards;
+    }
 
-/* ── RESULTS ── */
-#results { background: rgba(255,255,255,0.015); }
-.results-hero {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
-  margin-bottom: 3rem;
-}
-.result-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 2.5rem;
-  text-align: center;
-  transition: border-color 0.25s, transform 0.25s;
-}
-.result-card:hover { border-color: var(--teal); transform: translateY(-4px); }
-.result-card.winner {
-  background: linear-gradient(135deg, rgba(13,115,119,0.15), rgba(20,189,204,0.08));
-  border-color: rgba(13,115,119,0.5);
-}
-.result-big {
-  font-family: 'DM Mono', monospace;
-  font-size: 3.5rem; font-weight: 500;
-  line-height: 1; margin-bottom: 0.5rem;
-}
-.result-big.gold { color: var(--teal-lt); }
-.result-big.red  { color: #FF6B6B; }
-.result-label { font-size: 0.9rem; color: var(--gray-lt); }
-.result-sub { font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem; }
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      padding: 0.85rem 1.8rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-block;
+    }
 
-/* chart bars */
-.bar-chart { margin-top: 1rem; }
-.bar-row {
-  display: flex; align-items: center; gap: 1rem;
-  margin-bottom: 0.9rem;
-}
-.bar-name {
-  font-size: 0.8rem; color: var(--gray-lt);
-  width: 130px; flex-shrink: 0; text-align: right;
-}
-.bar-wrap {
-  flex: 1; background: rgba(255,255,255,0.06);
-  border-radius: 4px; height: 28px; overflow: hidden;
-}
-.bar-fill {
-  height: 100%; border-radius: 4px;
-  display: flex; align-items: center; padding-left: 10px;
-  font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #fff;
-  font-weight: 500;
-  transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
-  width: 0;
-}
-.bar-fill.visible { width: var(--w); }
+    .btn-primary {
+      background: var(--purple);
+      color: #fff;
+      border: 1px solid var(--purple);
+    }
 
-/* class breakdown */
-.class-breakdown {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem; margin-top: 2rem;
-}
-.class-card {
-  border-radius: 14px; padding: 1.5rem;
-  text-align: center;
-}
-.class-card.neg { background: rgba(13,115,119,0.15); border: 1px solid rgba(13,115,119,0.3); }
-.class-card.pos { background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.3); }
-.class-card.ov  { background: rgba(244,162,97,0.12); border: 1px solid rgba(244,162,97,0.3); }
-.class-card h4  { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-lt); margin-bottom: 1rem; }
-.metric-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
-.metric-key { font-size: 0.82rem; color: var(--gray-lt); }
-.metric-val { font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500; }
-.neg .metric-val { color: var(--teal-lt); }
-.pos .metric-val { color: #FF6B6B; }
-.ov  .metric-val { color: var(--accent); }
+    .btn-primary:hover {
+      background: var(--purple-glow);
+      box-shadow: 0 0 20px rgba(124,58,237,0.4);
+    }
 
-/* ── CHALLENGE ── */
-#challenge { background: var(--navy); }
-.challenge-split {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
-  align-items: start;
-}
-.smote-visual { margin-top: 1.5rem; }
-.smote-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.smote-label { font-size: 0.82rem; color: var(--gray-lt); width: 90px; flex-shrink: 0; }
-.smote-bar-wrap { flex: 1; background: rgba(255,255,255,0.06); border-radius: 6px; height: 36px; overflow: hidden; position: relative; }
-.smote-bar { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 10px;
-  font-size: 0.78rem; font-family: 'DM Mono', monospace; color: #fff; font-weight: 500;
-  transition: width 1.4s cubic-bezier(0.16,1,0.3,1); width: 0; }
-.smote-bar.visible { width: var(--w); }
-.solution-list { list-style: none; margin-top: 1.5rem; }
-.solution-list li {
-  display: flex; gap: 1rem; align-items: flex-start;
-  padding: 1rem; border-radius: 10px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 0.8rem;
-  transition: border-color 0.2s;
-}
-.solution-list li:hover { border-color: var(--teal); }
-.sol-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
-.sol-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
-.sol-text p  { font-size: 0.82rem; color: var(--gray-lt); line-height: 1.5; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid rgba(148,163,184,0.3);
+    }
 
-/* ── TEAM ── */
-#team { background: rgba(255,255,255,0.02); }
-.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-.team-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px; padding: 2rem;
-  transition: border-color 0.25s, transform 0.25s;
-  position: relative; overflow: hidden;
-}
-.team-card::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
-}
-.team-card.card-1::before { background: linear-gradient(90deg, var(--teal), var(--teal-lt)); }
-.team-card.card-2::before { background: linear-gradient(90deg, #6930C3, #a855f7); }
-.team-card.card-3::before { background: linear-gradient(90deg, var(--accent), #f97316); }
-.team-card:hover { border-color: var(--teal); transform: translateY(-5px); }
-.team-avatar {
-  width: 64px; height: 64px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; margin-bottom: 1rem;
-}
-.av-1 { background: rgba(13,115,119,0.2); border: 2px solid var(--teal); }
-.av-2 { background: rgba(105,48,195,0.2); border: 2px solid #6930C3; }
-.av-3 { background: rgba(244,162,97,0.2); border: 2px solid var(--accent); }
-.team-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.2rem; }
-.team-id { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--gray); margin-bottom: 0.8rem; }
-.team-role {
-  display: inline-block; padding: 0.25rem 0.7rem;
-  border-radius: 99px; font-size: 0.75rem;
-  background: rgba(13,115,119,0.15); color: var(--teal-lt);
-  border: 1px solid rgba(20,189,204,0.2); margin-bottom: 1rem;
-}
-.team-contrib { font-size: 0.85rem; color: var(--gray-lt); line-height: 1.6; }
+    .btn-outline:hover {
+      border-color: var(--purple-light);
+      color: var(--purple-light);
+    }
 
-/* ── LINKS ── */
-#links { background: var(--navy); }
-.links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
-.link-card {
-  display: flex; align-items: center; gap: 1.2rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px; padding: 1.5rem;
-  text-decoration: none; color: var(--white);
-  transition: border-color 0.25s, transform 0.25s, background 0.25s;
-}
-.link-card:hover {
-  border-color: var(--teal); transform: translateY(-4px);
-  background: rgba(13,115,119,0.1);
-}
-.link-icon { font-size: 1.8rem; flex-shrink: 0; }
-.link-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
-.link-desc  { font-size: 0.8rem; color: var(--gray-lt); }
-.link-arrow { margin-left: auto; font-size: 1.1rem; color: var(--gray); transition: color 0.2s, transform 0.2s; }
-.link-card:hover .link-arrow { color: var(--teal-lt); transform: translateX(4px); }
+    /* glowing orb */
+    .hero-orb {
+      position: absolute;
+      right: -100px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 2.5rem 3rem;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 1rem;
-}
-.footer-left { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--gray); }
-.footer-right { font-size: 0.82rem; color: var(--gray); }
+    /* ── SECTIONS ── */
+    section {
+      padding: 6rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
 
-/* ── SCROLL REVEAL ── */
-.reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--purple-light);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  nav { padding: 1rem 1.5rem; }
-  .nav-links { display: none; }
-  section { padding: 4rem 1.5rem; }
-  #hero { padding: 6rem 1.5rem 3rem; }
-  .overview-grid, .results-hero, .challenge-split, .class-breakdown { grid-template-columns: 1fr; }
-  .bar-name { width: 90px; font-size: 0.72rem; }
-  footer { flex-direction: column; text-align: center; }
-}
-</style>
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .stat-box {
+      background: var(--bg2);
+      padding: 2rem;
+    }
+
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--purple-light);
+      font-family: var(--mono);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SKILLS ── */
+    .skills-bg { background: var(--bg2); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .skill-block {
+      background: var(--bg);
+      padding: 2rem 1.5rem;
+      transition: background 0.2s;
+    }
+
+    .skill-block:hover { background: var(--bg3); }
+
+    .skill-icon {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .skill-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .skill-level {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--purple-light);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      border-radius: 4px;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--purple-light));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: rgba(124,58,237,0.5);
+      transform: translateY(-2px);
+    }
+
+    .project-card:hover::before { opacity: 1; }
+
+    .project-card.featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--purple-light);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      background: rgba(124,58,237,0.1);
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+    }
+
+    .project-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .project-desc {
+      color: var(--text-dim);
+      line-height: 1.7;
+      font-size: 0.92rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-metrics {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .metric {
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--purple-light);
+    }
+
+    .metric-label {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    .tech-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.3rem 0.7rem;
+      background: rgba(148,163,184,0.08);
+      border: 1px solid rgba(148,163,184,0.15);
+      border-radius: 2px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--purple-light);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .project-link:hover {
+      background: rgba(124,58,237,0.1);
+      border-color: var(--purple-light);
+    }
+
+    /* ── CONTACT ── */
+    .contact-bg { background: var(--bg2); }
+
+    .contact-inner {
+      max-width: 700px;
+    }
+
+    .contact-inner p {
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      font-size: 1.05rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.5rem 3rem; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .project-card.featured { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.8rem; padding: 1.5rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">CS4082 · ML PROJECT · 2026</a>
-  <ul class="nav-links">
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#pipeline">Pipeline</a></li>
-    <li><a href="#challenge">Challenge</a></li>
-    <li><a href="#results">Results</a></li>
-    <li><a href="#team">Team</a></li>
-    <li><a href="#links">Links</a></li>
-  </ul>
-</nav>
+  <!-- NAV -->
+  <nav>
+    <a href="#home" class="nav-logo"><span>~/</span>yasser-alassad</a>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </nav>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-bg-circle c1"></div>
-  <div class="hero-bg-circle c2"></div>
-
-  <div class="badge">
-    <span class="badge-dot"></span>
-    Topic 3 · Minority Class Suppression · Effat University
-  </div>
-
-  <h1 class="hero-title">
-    Early Detection<br>of <em>Sepsis</em> in<br>ICU Patients
-  </h1>
-
-  <p class="hero-sub">
-    A machine learning pipeline that tackles adversarial class imbalance
-    to predict sepsis onset in 40,336 ICU patients — where missing a case
-    can cost a life.
-  </p>
-
-  <div class="hero-ctas">
-    <a href="https://github.com/yasser57299/Machine-Learning-/tree/main/projectt" target="_blank" class="btn btn-primary">
-      ⌥ View on GitHub
-    </a>
-    <a href="#results" class="btn btn-outline">
-      ↓ See Results
-    </a>
-  </div>
-
-  <div class="stat-row">
-    <div class="stat-item">
-      <div class="stat-num">40,336</div>
-      <div class="stat-lbl">ICU Patients</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">7.27%</div>
-      <div class="stat-lbl">Sepsis Rate</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">7</div>
-      <div class="stat-lbl">ML Models</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">0.864</div>
-      <div class="stat-lbl">Best AUC-ROC</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">0.730</div>
-      <div class="stat-lbl">Best F1 Macro</div>
-    </div>
-  </div>
-</section>
-
-<!-- OVERVIEW -->
-<section id="overview">
-  <div class="reveal">
-    <div class="section-label">// 01 — Overview</div>
-    <h2 class="section-title">What is this project?</h2>
-    <p class="section-desc">
-      Sepsis kills ~11 million people annually worldwide. We built a full ML pipeline
-      to detect it early from real ICU time-series data — addressing one of the hardest
-      problems in clinical machine learning: severe class imbalance.
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="hero-orb"></div>
+    <p class="hero-tag">// CS Student · Effat University · Junior Year</p>
+    <h1>
+      Yasser<br>
+      <span class="name-accent">Alassad</span>
+    </h1>
+    <p class="hero-desc">
+      Computer Science student building ML pipelines, web tools, and software solutions.
+      Focused on turning messy real-world data into something that actually works.
     </p>
-  </div>
-  <div class="overview-grid reveal">
-    <div class="o-card">
-      <div class="o-card-icon">🩺</div>
-      <h3>Clinical Problem</h3>
-      <p>Sepsis is triggered by the body's dysregulated response to infection. Early detection is critical — every hour of delay increases mortality by 7%.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
     </div>
-    <div class="o-card">
-      <div class="o-card-icon">⚠️</div>
-      <h3>Adversarial Challenge</h3>
-      <p>Only 7.27% of patients develop sepsis. A model predicting "no sepsis" always achieves 92.7% accuracy — yet saves zero lives. We fix this.</p>
-    </div>
-    <div class="o-card">
-      <div class="o-card-icon">📊</div>
-      <h3>Dataset</h3>
-      <p>1.55 million hourly ICU observations across 40,336 unique patients. 15 clinical features including vital signs, labs, and demographics.</p>
-    </div>
-    <div class="o-card">
-      <div class="o-card-icon">🎯</div>
-      <h3>Goal</h3>
-      <p>Maximise recall on the minority (sepsis) class while maintaining overall model utility — optimising for AUC-ROC and F1, not raw accuracy.</p>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- PIPELINE -->
-<section id="pipeline">
-  <div class="reveal">
-    <div class="section-label">// 02 — Methodology</div>
-    <h2 class="section-title">Pipeline Overview</h2>
-    <p class="section-desc">
-      A reproducible, end-to-end pipeline from raw ICU data to evaluated classifier.
-    </p>
-  </div>
-  <div class="pipeline-steps">
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-body">
-        <h3>Data Loading & Aggregation</h3>
-        <p>1.55M hourly rows aggregated to 40,336 patient-level records. For each vital sign (HR, O₂Sat, Temp, SBP, MAP, DBP, Resp) we compute mean, std, min, max — capturing both baseline and instability.</p>
-        <span class="step-tag">34 engineered features</span>
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label reveal">// 01 — about</p>
+    <h2 class="section-title reveal">Who I Am</h2>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a Junior Computer Science student at Effat University, Jeddah. I enjoy working
+          across the stack — from data preprocessing and machine learning pipelines to
+          building clean interfaces that make software usable.
+        </p>
+        <p>
+          My recent research tackled early sepsis detection in ICU patients using
+          seven ML classifiers under severe class imbalance — a real clinical problem
+          where getting it wrong costs lives.
+        </p>
+        <p>
+          When I'm not coding, I'm thinking about why models fail and how to make
+          them more reliable for the people who actually depend on them.
+        </p>
+      </div>
+      <div class="reveal">
+        <div class="about-stats">
+          <div class="stat-box">
+            <div class="stat-num">7</div>
+            <div class="stat-label">ML models compared</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">40K+</div>
+            <div class="stat-label">ICU patients analysed</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">0.864</div>
+            <div class="stat-label">Best AUC-ROC achieved</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num">3rd</div>
+            <div class="stat-label">Year of CS degree</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-body">
-        <h3>Preprocessing</h3>
-        <p>Median imputation fitted on training set only. Stratified 80/20 train-test split preserving the 7.27% class ratio. StandardScaler applied post-split to prevent leakage.</p>
-        <span class="step-tag">No data leakage</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-body">
-        <h3>SMOTE Rebalancing</h3>
-        <p>Applied to training set only. Synthetic minority samples generated by interpolating between existing sepsis-positive patients (k=5 neighbours). Training set: 2,346 → 29,922 positive samples.</p>
-        <span class="step-tag">Balanced training set</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">04</div>
-      <div class="step-body">
-        <h3>7-Model Training with CV</h3>
-        <p>Logistic Regression, Decision Tree, Random Forest, SVM, KNN, Naive Bayes, and Gradient Boosting trained with stratified 2-fold CV. class_weight='balanced' applied where supported.</p>
-        <span class="step-tag">Stratified 2-fold CV</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">05</div>
-      <div class="step-body">
-        <h3>Hyperparameter Tuning</h3>
-        <p>GridSearchCV on top 3 models (Logistic Regression, Random Forest, Gradient Boosting). Optimised for F1-macro to balance precision and recall across both classes.</p>
-        <span class="step-tag">GridSearchCV · F1-macro</span>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">06</div>
-      <div class="step-body">
-        <h3>Test Set Evaluation</h3>
-        <p>Final evaluation on 8,068 held-out, real (imbalanced) patients. Metrics: AUC-ROC, F1-macro, F1-sepsis, precision, recall, and confusion matrix.</p>
-        <span class="step-tag">8,068 real patients</span>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- CHALLENGE -->
-<section id="challenge">
-  <div class="challenge-split">
-    <div class="reveal">
-      <div class="section-label">// 03 — The Problem</div>
-      <h2 class="section-title">Minority Class Suppression</h2>
-      <p style="color:var(--gray-lt);font-size:0.95rem;line-height:1.7;margin-bottom:1.5rem;">
-        Before applying any mitigation, every model converged to predicting "no sepsis" for almost every patient — achieving high accuracy but detecting zero sepsis cases.
+  <!-- SKILLS -->
+  <section id="skills" class="skills-bg">
+    <p class="section-label reveal">// 02 — skills</p>
+    <h2 class="section-title reveal">What I Work With</h2>
+    <div class="skills-grid reveal">
+      <div class="skill-block">
+        <div class="skill-icon">🐍</div>
+        <div class="skill-name">Python</div>
+        <div class="skill-level">Primary Language</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">☕</div>
+        <div class="skill-name">Java</div>
+        <div class="skill-level">OOP & Backend</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">⚡</div>
+        <div class="skill-name">JavaScript</div>
+        <div class="skill-level">Web & Frontend</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">⚙️</div>
+        <div class="skill-name">C++</div>
+        <div class="skill-level">Systems & Algorithms</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">🤖</div>
+        <div class="skill-name">Machine Learning</div>
+        <div class="skill-level">scikit-learn · SMOTE</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">🌐</div>
+        <div class="skill-name">Web Dev</div>
+        <div class="skill-level">HTML · CSS · JS</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">🗃️</div>
+        <div class="skill-name">Git & GitHub</div>
+        <div class="skill-level">Version Control</div>
+      </div>
+      <div class="skill-block">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">Data Analysis</div>
+        <div class="skill-level">pandas · numpy</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label reveal">// 03 — projects</p>
+    <h2 class="section-title reveal">Selected Work</h2>
+
+    <div class="projects-grid">
+
+      <!-- FEATURED: Sepsis ML -->
+      <div class="project-card featured reveal">
+        <div>
+          <span class="project-tag">★ Featured · Machine Learning · Healthcare</span>
+          <h3 class="project-title">Early Detection of Sepsis in ICU Patients</h3>
+          <p class="project-desc">
+            Built a full ML pipeline to detect sepsis early in ICU patients — a condition responsible for
+            millions of deaths annually. The core challenge: only 7.27% of patients develop sepsis,
+            so naive models simply predict "no sepsis" for everyone and call it 92% accuracy.
+            We tackled this with SMOTE oversampling + class-weighted classifiers across seven
+            algorithm families. Random Forest came out on top.
+          </p>
+          <div class="project-metrics">
+            <div class="metric">
+              <div class="metric-val">0.864</div>
+              <div class="metric-label">AUC-ROC</div>
+            </div>
+            <div class="metric">
+              <div class="metric-val">40,336</div>
+              <div class="metric-label">ICU patients</div>
+            </div>
+            <div class="metric">
+              <div class="metric-val">7</div>
+              <div class="metric-label">models tested</div>
+            </div>
+            <div class="metric">
+              <div class="metric-val">64%</div>
+              <div class="metric-label">sepsis recall</div>
+            </div>
+          </div>
+          <div class="tech-tags">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">scikit-learn</span>
+            <span class="tech-tag">SMOTE</span>
+            <span class="tech-tag">Random Forest</span>
+            <span class="tech-tag">GridSearchCV</span>
+            <span class="tech-tag">pandas</span>
+          </div>
+          <a href="https://github.com/yasser57299/Machine-Learning-" target="_blank" class="project-link">
+            ↗ View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card reveal">
+        <span class="project-tag">Web Development</span>
+        <h3 class="project-title">Student Task Manager</h3>
+        <p class="project-desc">
+          A browser-based task and deadline tracker built for students. Supports priority tagging,
+          due-date reminders, and local persistence — no backend needed. Clean, distraction-free UI.
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">HTML/CSS</span>
+          <span class="tech-tag">LocalStorage</span>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card reveal">
+        <span class="project-tag">Algorithms · Java</span>
+        <h3 class="project-title">Pathfinding Visualiser</h3>
+        <p class="project-desc">
+          Interactive visualiser for graph search algorithms — BFS, DFS, and Dijkstra's — on a
+          user-drawn grid. Built in Java with step-by-step animation to make abstract CS concepts
+          concrete and intuitive.
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">Java</span>
+          <span class="tech-tag">Graph Algorithms</span>
+          <span class="tech-tag">OOP</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-bg">
+    <p class="section-label reveal">// 04 — contact</p>
+    <h2 class="section-title reveal">Let's Connect</h2>
+    <div class="contact-inner">
+      <p class="reveal">
+        I'm open to internships, collaborations, and interesting projects.
+        If you're working on something in ML, data, or web — reach out.
       </p>
-      <div class="smote-visual">
-        <div class="smote-row">
-          <span class="smote-label">Before · Neg</span>
-          <div class="smote-bar-wrap">
-            <div class="smote-bar" style="--w:100%;background:#1E6091;">29,922</div>
-          </div>
-        </div>
-        <div class="smote-row">
-          <span class="smote-label">Before · Sep</span>
-          <div class="smote-bar-wrap">
-            <div class="smote-bar" style="--w:7.8%;background:#E63946;">2,346</div>
-          </div>
-        </div>
-        <div class="smote-row">
-          <span class="smote-label">After · Neg</span>
-          <div class="smote-bar-wrap">
-            <div class="smote-bar" style="--w:100%;background:#0D7377;">29,922</div>
-          </div>
-        </div>
-        <div class="smote-row">
-          <span class="smote-label">After · Sep</span>
-          <div class="smote-bar-wrap">
-            <div class="smote-bar" style="--w:100%;background:#2EC4B6;">29,922</div>
-          </div>
-        </div>
+      <div class="contact-links reveal">
+        <a href="https://github.com/yasser57299" target="_blank" class="btn btn-primary">GitHub →</a>
+        <a href="mailto:yasser@example.com" class="btn btn-outline">Email Me</a>
       </div>
     </div>
+  </section>
 
-    <div class="reveal">
-      <div class="section-label" style="margin-top:3.5rem;">// Our Solution</div>
-      <h2 class="section-title" style="font-size:1.8rem;">Three-Layer Fix</h2>
-      <ul class="solution-list">
-        <li>
-          <span class="sol-icon">🔬</span>
-          <div class="sol-text">
-            <h4>SMOTE Oversampling</h4>
-            <p>Synthetic minority over-sampling in feature space (k=5) applied only to training data. Balances classes without duplicating real patients.</p>
-          </div>
-        </li>
-        <li>
-          <span class="sol-icon">⚖️</span>
-          <div class="sol-text">
-            <h4>Class-Weighted Loss</h4>
-            <p><code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px;font-size:0.85em;">class_weight='balanced'</code> — penalises misclassifying sepsis patients more heavily during training.</p>
-          </div>
-        </li>
-        <li>
-          <span class="sol-icon">📈</span>
-          <div class="sol-text">
-            <h4>Recall-Oriented Metrics</h4>
-            <p>Evaluation uses AUC-ROC and F1-sepsis, not accuracy. A false negative (missed sepsis) is far more costly than a false positive.</p>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Yasser Alassad — CS @ Effat University</p>
+    <p>Built with HTML · CSS · JS</p>
+  </footer>
 
-<!-- RESULTS -->
-<section id="results">
-  <div class="reveal">
-    <div class="section-label">// 04 — Results</div>
-    <h2 class="section-title">Model Performance</h2>
-    <p class="section-desc">
-      Evaluated on 8,068 held-out real patients. Random Forest wins across all key metrics.
-    </p>
-  </div>
-
-  <div class="results-hero reveal">
-    <div class="result-card winner">
-      <div class="result-big gold">0.864</div>
-      <div class="result-label">AUC-ROC · Random Forest</div>
-      <div class="result-sub">Best discriminative performance</div>
-    </div>
-    <div class="result-card">
-      <div class="result-big" style="color:var(--accent);">0.730</div>
-      <div class="result-label">F1 Macro · Random Forest</div>
-      <div class="result-sub">Balanced precision & recall</div>
-    </div>
-  </div>
-
-  <!-- AUC bar chart -->
-  <div class="reveal">
-    <p style="font-size:0.78rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;font-family:'DM Mono',monospace;">Test AUC-ROC — All Models</p>
-    <div class="bar-chart">
-      <div class="bar-row">
-        <span class="bar-name">Random Forest ★</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:86.44%;background:linear-gradient(90deg,#0D7377,#2EC4B6);">0.864</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">SVM</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:83.23%;background:linear-gradient(90deg,#6930C3,#a855f7);">0.832</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">Grad. Boosting</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:80.74%;background:linear-gradient(90deg,#0D5C63,#0D7377);">0.807</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">Naive Bayes</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:75.97%;background:#475569;">0.760</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">KNN</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:75.05%;background:#475569;">0.751</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">Logistic Reg.</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:74.91%;background:#475569;">0.749</div>
-        </div>
-      </div>
-      <div class="bar-row">
-        <span class="bar-name">Decision Tree</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="--w:63.10%;background:#64748B;">0.631</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Class breakdown -->
-  <div class="reveal" style="margin-top:2.5rem;">
-    <p style="font-size:0.78rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;font-family:'DM Mono',monospace;">Best Model: Random Forest — Class Breakdown</p>
-    <div class="class-breakdown">
-      <div class="class-card neg">
-        <h4>No Sepsis Class</h4>
-        <div class="metric-row"><span class="metric-key">Precision</span><span class="metric-val">0.97</span></div>
-        <div class="metric-row"><span class="metric-key">Recall</span><span class="metric-val">0.93</span></div>
-        <div class="metric-row"><span class="metric-key">F1</span><span class="metric-val">0.95</span></div>
-        <div class="metric-row"><span class="metric-key">Support</span><span class="metric-val">7,482</span></div>
-      </div>
-      <div class="class-card pos">
-        <h4>Sepsis Class</h4>
-        <div class="metric-row"><span class="metric-key">Precision</span><span class="metric-val">0.42</span></div>
-        <div class="metric-row"><span class="metric-key">Recall</span><span class="metric-val">0.64</span></div>
-        <div class="metric-row"><span class="metric-key">F1</span><span class="metric-val">0.51</span></div>
-        <div class="metric-row"><span class="metric-key">Support</span><span class="metric-val">586</span></div>
-      </div>
-      <div class="class-card ov">
-        <h4>Overall</h4>
-        <div class="metric-row"><span class="metric-key">Accuracy</span><span class="metric-val">0.91</span></div>
-        <div class="metric-row"><span class="metric-key">AUC-ROC</span><span class="metric-val">0.864</span></div>
-        <div class="metric-row"><span class="metric-key">F1 Macro</span><span class="metric-val">0.730</span></div>
-        <div class="metric-row"><span class="metric-key">Patients</span><span class="metric-val">8,068</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TEAM -->
-<section id="team">
-  <div class="reveal">
-    <div class="section-label">// 05 — Team</div>
-    <h2 class="section-title">Meet the Team</h2>
-    <p class="section-desc">CS4082 Machine Learning · Effat University · Spring 2026</p>
-  </div>
-  <div class="team-grid reveal">
-    <div class="team-card card-1">
-      <div class="team-avatar av-1">👨‍💻</div>
-      <div class="team-name">Yasser Alassad</div>
-      <div class="team-id">S22107723</div>
-      <div class="team-role">ML Engineer</div>
-      <p class="team-contrib">Data preprocessing, SMOTE implementation, model training & hyperparameter tuning, GitHub repository management.</p>
-    </div>
-    <div class="team-card card-2">
-      <div class="team-avatar av-2">👨‍🔬</div>
-      <div class="team-name">Umar Ayyash</div>
-      <div class="team-id">S22107722</div>
-      <div class="team-role">Data Scientist</div>
-      <p class="team-contrib">Feature engineering, EDA & visualizations, model evaluation, technical report writing and portfolio design.</p>
-    </div>
-    <div class="team-card card-3">
-      <div class="team-avatar av-3">👩‍🏫</div>
-      <div class="team-name">Dr. Naila Marir</div>
-      <div class="team-id">Instructor</div>
-      <div class="team-role" style="background:rgba(244,162,97,0.15);color:var(--accent);border-color:rgba(244,162,97,0.3);">Course Instructor</div>
-      <p class="team-contrib">CS4082 Machine Learning course instructor. Effat University, Computer Science Department.</p>
-    </div>
-  </div>
-</section>
-
-<!-- LINKS -->
-<section id="links">
-  <div class="reveal">
-    <div class="section-label">// 06 — Resources</div>
-    <h2 class="section-title">Project Links</h2>
-    <p class="section-desc">All project deliverables in one place.</p>
-  </div>
-  <div class="links-grid reveal">
-    <a class="link-card" href="https://github.com/yasser57299/Machine-Learning-/tree/main/projectt" target="_blank">
-      <span class="link-icon">🐙</span>
-      <div>
-        <div class="link-title">GitHub Repository</div>
-        <div class="link-desc">Full code, notebook & README</div>
-      </div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="link-card" href="CS4082_Technical_Report.pdf" target="_blank">
-      <span class="link-icon">📄</span>
-      <div>
-        <div class="link-title">Technical Report</div>
-        <div class="link-desc">ACL format · 10 pages</div>
-      </div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="link-card" href="CS4082_Poster.pptx" target="_blank">
-      <span class="link-icon">🖼️</span>
-      <div>
-        <div class="link-title">Research Poster</div>
-        <div class="link-desc">A1 format · Full results</div>
-      </div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="link-card" href="https://github.com/yasser57299" target="_blank">
-      <span class="link-icon">👤</span>
-      <div>
-        <div class="link-title">GitHub Profile</div>
-        <div class="link-desc">yasser57299</div>
-      </div>
-      <span class="link-arrow">→</span>
-    </a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-left">
-    CS4082 · Machine Learning · Effat University · Spring 2026<br>
-    Topic 3: Early Detection of Rare Medical Conditions — Minority Class Suppression
-  </div>
-  <div class="footer-right">
-    Yasser Alassad · Umar Ayyash
-  </div>
-</footer>
-
-<script>
-// ── Intersection Observer for reveal animations
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(el => {
-    if (el.isIntersecting) {
-      el.target.classList.add('visible');
-      observer.unobserve(el.target);
-    }
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.reveal, .step').forEach(el => observer.observe(el));
-
-// ── Animate bars when visible
-const barObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.querySelectorAll('.bar-fill, .smote-bar').forEach((bar, i) => {
-        setTimeout(() => bar.classList.add('visible'), i * 120);
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
-      barObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.3 });
+    });
 
-document.querySelectorAll('.bar-chart, .smote-visual').forEach(el => barObserver.observe(el));
-
-// ── Animate stats counter
-const statNums = document.querySelectorAll('.stat-num');
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const target = el.textContent;
-      const isFloat = target.includes('.');
-      const num = parseFloat(target.replace(/,/g, ''));
-      const isLarge = num > 100;
-      let start = 0; const duration = 1400;
-      const startTime = performance.now();
-      const update = (now) => {
-        const prog = Math.min((now - startTime) / duration, 1);
-        const eased = 1 - Math.pow(1 - prog, 3);
-        const current = start + (num - start) * eased;
-        if (isLarge) {
-          el.textContent = Math.floor(current).toLocaleString();
-        } else if (isFloat) {
-          el.textContent = current.toFixed(3);
-        } else {
-          el.textContent = Math.floor(current);
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
-        if (prog < 1) requestAnimationFrame(update);
-        else el.textContent = target;
-      };
-      requestAnimationFrame(update);
-      statObserver.unobserve(el);
-    }
-  });
-}, { threshold: 0.5 });
-statNums.forEach(el => statObserver.observe(el));
-</script>
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
